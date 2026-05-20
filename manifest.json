@@ -17,5 +17,17 @@
 		"default_icon": "icons/button.png",
 		"default_popup": "popup/popup.html"
 	},
+	"commands": {
+		"copy-message-id": {
+			"suggested_key": {
+				"default": "Ctrl+Alt+O"
+			},
+			"description": "Copy Message ID"
+		}
+	},
+	"background": {
+		"scripts": ["background.js"],
+		"persistent": false
+	},
 	"version": "1.3.2"
 }
