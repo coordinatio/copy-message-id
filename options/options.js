@@ -3,6 +3,7 @@ const suffixInput = document.querySelector("#suffix");
 const copyBracketsInput = document.querySelector("#copyBrackets");
 const urlEncodeInput = document.querySelector("#urlEncode");
 const rawInput = document.querySelector("#raw");
+const iconOnlyInput = document.querySelector("#iconOnly");
 
 /*
 Set text boxes to automatically resize.
@@ -25,7 +26,8 @@ function storeSettings() {
       suffix: suffixInput.value,
       copyBrackets: copyBrackets.checked,
       urlEncode: urlEncode.checked,
-      raw: raw.checked
+      raw: raw.checked,
+      iconOnly: iconOnlyInput.checked
     }
   });
 }
@@ -41,6 +43,7 @@ function updateUI(storedSettings) {
     copyBracketsInput.checked = storedSettings.copyID.copyBrackets;
     urlEncodeInput.checked = storedSettings.copyID.urlEncode;
     rawInput.checked = storedSettings.copyID.raw;
+    iconOnlyInput.checked = storedSettings.copyID.iconOnly ?? false;
   }
 }
 
@@ -60,6 +63,7 @@ On checkbox change, save the currently selected settings.
 copyBracketsInput.addEventListener("change", storeSettings);
 urlEncodeInput.addEventListener("change", storeSettings);
 rawInput.addEventListener("change", storeSettings);
+iconOnlyInput.addEventListener("change", storeSettings);
 
 /*
 On textbox blur, save the currently selected settings.

@@ -1,15 +1,22 @@
-async function updateButtonTitle() {
+async function updateButtonLabel() {
 	const commands = await browser.commands.getAll();
 	const cmd = commands.find(c => c.name === "copy-message-id");
 	const shortcut = cmd && cmd.shortcut ? ` (${cmd.shortcut})` : "";
 	await browser.messageDisplayAction.setTitle({ title: "Copy Message ID" + shortcut });
-	await browser.messageDisplayAction.setLabel({ label: "Copy Message ID" });
+
+	const config = await browser.storage.local.get("copyID");
+	const iconOnly = config.copyID?.iconOnly ?? false;
+	await browser.messageDisplayAction.setLabel({ label: iconOnly ? "" : "Copy Message ID" });
 }
 
-updateButtonTitle();
+updateButtonLabel();
 
 browser.commands.onChanged.addListener(({ name }) => {
-	if (name === "copy-message-id") updateButtonTitle();
+	if (name === "copy-message-id") updateButtonLabel();
+});
+
+browser.storage.onChanged.addListener((changes, area) => {
+	if (area === "local" && changes.copyID) updateButtonLabel();
 });
 
 browser.commands.onCommand.addListener(async (command) => {
