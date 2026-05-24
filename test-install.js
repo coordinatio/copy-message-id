@@ -74,13 +74,26 @@ if (fs.existsSync(addonDir)) fs.rmSync(addonDir, { recursive: true });
 fs.copyFileSync(XPI_FILE, path.join(extDir, `${ADDON_ID}.xpi`));
 ok(`Addon XPI copied to: ${extDir}\n`);
 
-// Step 4: Create prefs.js if needed
+// Step 4: Write profile configuration
 log('Step 4: Setting up profile configuration');
+
+// user.js is applied on every startup and never modified by Thunderbird,
+// so our prefs survive across restarts.
+const userJsFile = path.join(profileDir, 'user.js');
+fs.writeFileSync(userJsFile, [
+  'user_pref("extensions.autoDisableScopes", 0);',
+  'user_pref("mail.shell.checkDefaultClient", false);',
+  'user_pref("shell.checkDefaultClient", false);',
+  'user_pref("mail.shell.skipDefaultClientCheckOnce", true);',
+  'user_pref("datareporting.policy.dataSubmissionPolicyBypassNotification", true);',
+  'user_pref("datareporting.healthreport.uploadEnabled", false);',
+  'user_pref("toolkit.telemetry.enabled", false);',
+].join('\n') + '\n');
+
+// prefs.js holds account/mail config that Thunderbird may extend but won't reset.
 const prefsFile = path.join(profileDir, 'prefs.js');
+if (!fs.existsSync(prefsFile)) {
   fs.writeFileSync(prefsFile, [
-    'user_pref("extensions.activeThemeID", "firefox-compact-dark@mozilla.org");',
-    'user_pref("extensions.autoDisableScopes", 0);',
-    'user_pref("mail.shell.checkDefaultClient", false);',
     'user_pref("mail.accountmanager.accounts", "account1");',
     'user_pref("mail.account.account1.server", "server1");',
     'user_pref("mail.server.server1.type", "none");',
@@ -92,6 +105,10 @@ const prefsFile = path.join(profileDir, 'prefs.js');
     'user_pref("mail.server.server1.socketType", 0);',
   ].join('\n') + '\n');
   ok('Wrote prefs.js');
+} else {
+  info('prefs.js already exists, skipping');
+}
+ok('Wrote user.js');
 console.log();
 
 // Step 5: Create test email files from tests/ directory
