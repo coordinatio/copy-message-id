@@ -1,14 +1,11 @@
-FILES=manifest.json background.js \
-popup/* options/* icons/* LICENSE
-
 XPI_NAME=copy-message-id@j.kahn.xpi
 
-.PHONY: clean
+.PHONY: clean all
 
 all: $(XPI_NAME)
 
-$(XPI_NAME): $(FILES)
-	zip -r $@ $^
+$(XPI_NAME):
+	node build.js
 
 clean:
-	rm *.xpi
+	node -e "const fs=require('fs');fs.readdirSync('.').filter(f=>f.endsWith('.xpi')).forEach(f=>fs.unlinkSync(f))"
