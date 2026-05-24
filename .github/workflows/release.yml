@@ -25,6 +25,9 @@ jobs:
         with:
           ssh-key: ${{ secrets.DEPLOY_KEY }}
 
+      - name: Install dependencies
+        run: sudo apt-get install -y zip
+
       - name: Bump version in manifest.json
         id: version
         run: |
