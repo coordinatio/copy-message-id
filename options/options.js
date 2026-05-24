@@ -66,3 +66,67 @@ On textbox blur, save the currently selected settings.
 */
 prefixInput.addEventListener("blur", storeSettings);
 suffixInput.addEventListener("blur", storeSettings);
+
+const shortcutInput = document.querySelector("#shortcut");
+const shortcutReset = document.querySelector("#shortcut-reset");
+const shortcutError = document.querySelector("#shortcut-error");
+const COMMAND_NAME = "copy-message-id";
+
+async function loadShortcut() {
+  const commands = await browser.commands.getAll();
+  const cmd = commands.find(c => c.name === COMMAND_NAME);
+  shortcutInput.value = (cmd && cmd.shortcut) ? cmd.shortcut : "";
+}
+
+function keyEventToShortcut(e) {
+  if (["Control", "Alt", "Shift", "Meta"].includes(e.key)) return null;
+  const modifiers = [];
+  if (e.ctrlKey)  modifiers.push("Ctrl");
+  if (e.altKey)   modifiers.push("Alt");
+  if (e.shiftKey) modifiers.push("Shift");
+  if (e.metaKey)  modifiers.push("Command");
+  if (modifiers.length === 0) return null;
+  const keyMap = {
+    " ": "Space", "ArrowUp": "Up", "ArrowDown": "Down",
+    "ArrowLeft": "Left", "ArrowRight": "Right",
+    ",": "Comma", ".": "Period",
+  };
+  let key = keyMap[e.key] ?? e.key;
+  if (key.length === 1) key = key.toUpperCase();
+  return [...modifiers, key].join("+");
+}
+
+shortcutInput.addEventListener("focus", () => {
+  shortcutInput.placeholder = "Press shortcut…";
+  shortcutError.textContent = "";
+});
+
+shortcutInput.addEventListener("blur", () => {
+  shortcutInput.placeholder = "";
+});
+
+shortcutInput.addEventListener("keydown", async (e) => {
+  e.preventDefault();
+  if (e.key === "Escape") { shortcutInput.blur(); return; }
+  const shortcut = keyEventToShortcut(e);
+  if (!shortcut) return;
+  try {
+    await browser.commands.update({ name: COMMAND_NAME, shortcut });
+    shortcutInput.value = shortcut;
+    shortcutError.textContent = "";
+  } catch (err) {
+    shortcutError.textContent = "Invalid shortcut: " + err.message;
+  }
+});
+
+shortcutReset.addEventListener("click", async () => {
+  try {
+    await browser.commands.reset(COMMAND_NAME);
+    await loadShortcut();
+    shortcutError.textContent = "";
+  } catch (err) {
+    shortcutError.textContent = "Reset failed: " + err.message;
+  }
+});
+
+loadShortcut();

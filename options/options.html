@@ -18,6 +18,11 @@
       <label>URL Encode the Message ID: <input id="urlEncode" type="checkbox"/></label>
       <br>
       <label>Get the raw Message ID (e.g. Message-ID: &lt;foo@bar&gt;): <input id="raw" type="checkbox"/></label>
+      <br>
+      <label class=textLabel for="shortcut">Keyboard shortcut: </label>
+      <input id="shortcut" type="text" readonly/>
+      <button id="shortcut-reset" type="button">Reset to default</button>
+      <p id="shortcut-error" class="shortcut-error"></p>
   </form>
   <script src="options.js"></script>
 </body>

@@ -9,6 +9,18 @@ body {
   margin-left: 1.0em;
 }
 
+#shortcut {
+  font-family: monospace;
+  width: 10em;
+  cursor: pointer;
+}
+
+.shortcut-error {
+  color: red;
+  margin: 0.2em 0 0 1em;
+  font-size: 0.9em;
+}
+
 textarea[type="text"] {
   margin: 0.5em;
   width: 450px;
