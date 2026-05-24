@@ -25,6 +25,12 @@ jobs:
         with:
           ssh-key: ${{ secrets.DEPLOY_KEY }}
 
+      - name: Get previous tag
+        id: prev_tag
+        run: |
+          prev=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          echo "tag=$prev" >> "$GITHUB_OUTPUT"
+
       - name: Bump version in manifest.json
         id: version
         run: |
@@ -50,6 +56,19 @@ jobs:
           git commit -m "Increase version to ${{ steps.version.outputs.version }}"
           git tag "v${{ steps.version.outputs.version }}"
           git push origin HEAD:${{ github.ref_name }} --tags
+
+      - name: Generate release notes
+        id: notes
+        run: |
+          prev="${{ steps.prev_tag.outputs.tag }}"
+          if [ -n "$prev" ]; then
+            notes=$(git log "${prev}..HEAD~1" --pretty=format:"- %s" --no-merges)
+          else
+            notes=$(git log HEAD~1 --pretty=format:"- %s" --no-merges)
+          fi
+          echo "notes<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$notes" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
