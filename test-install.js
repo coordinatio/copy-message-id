@@ -41,7 +41,6 @@ function findThunderbird() {
 }
 
 const ADDON_ID = 'copy-message-id@j.kahn';
-const XPI_FILE = 'copy-message-id@j.kahn.xpi';
 const PROFILE_NAME = 'thunderbird-test';
 
 const isWindows = process.platform === 'win32';
@@ -52,8 +51,7 @@ function info(msg) { console.log(`\x1b[33m→ ${msg}\x1b[0m`); }
 
 // Step 1: Build XPI
 log('Step 1: Building XPI');
-try { fs.unlinkSync(XPI_FILE); } catch {}
-buildXpi();
+const XPI_FILE = buildXpi();
 ok(`XPI built: ${XPI_FILE}\n`);
 
 // Step 2: Find or create Thunderbird profile
@@ -82,6 +80,7 @@ const prefsFile = path.join(profileDir, 'prefs.js');
   fs.writeFileSync(prefsFile, [
     'user_pref("extensions.activeThemeID", "firefox-compact-dark@mozilla.org");',
     'user_pref("extensions.autoDisableScopes", 0);',
+    'user_pref("mail.shell.checkDefaultClient", false);',
     'user_pref("mail.accountmanager.accounts", "account1");',
     'user_pref("mail.account.account1.server", "server1");',
     'user_pref("mail.server.server1.type", "none");',
