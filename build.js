@@ -32,10 +32,13 @@ function getXpiName() {
   return `${ADDON_BASE}-${version}${suffix}.xpi`;
 }
 
+const isWindows = process.platform === 'win32';
+const findCmd = isWindows ? 'where' : 'which';
+
 // Use 7-Zip (available on most Windows systems) or fall back to zip
 function getZipCommand() {
   try {
-    execSync('where 7z', { stdio: 'pipe' });
+    execSync(`${findCmd} 7z`, { stdio: 'pipe' });
     return '7z';
   } catch {}
 
@@ -44,7 +47,7 @@ function getZipCommand() {
   }
 
   try {
-    execSync('where zip', { stdio: 'pipe' });
+    execSync(`${findCmd} zip`, { stdio: 'pipe' });
     return 'zip';
   } catch {}
 
