@@ -1,30 +1,62 @@
+:root {
+  --label-w: 9em;
+  --col-gap: 0.75em;
+}
+
 body {
   width: 35em;
   font-family: "Open Sans Light", sans-serif;
   font-size: 0.9em;
   font-weight: 300;
+  padding: 1em;
+  color-scheme: light dark;
 }
 
-.textLabel {
-  margin-left: 1.0em;
+body > p {
+  margin: 0 0 0.75em;
+}
+
+form {
+  display: grid;
+  grid-template-columns: var(--label-w) 1fr;
+  gap: 0.5em var(--col-gap);
+  align-items: start;
+}
+
+.checkboxes {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+  padding-left: calc(var(--label-w) + var(--col-gap));
+  margin: 0.1em 0;
+}
+
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  resize: none;
+  overflow: hidden;
+  min-height: 1.8em;
+}
+
+.shortcut-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
 }
 
 #shortcut {
   font-family: monospace;
-  width: 10em;
+  width: 9em;
   cursor: pointer;
 }
 
 .shortcut-error {
+  grid-column: 2;
   color: red;
-  margin: 0.2em 0 0 1em;
-  font-size: 0.9em;
-}
-
-textarea[type="text"] {
-  margin: 0.5em;
-  width: 450px;
-  height: 1.5em;
-  resize: none;
-  overflow: hidden;
+  font-size: 0.85em;
+  margin: 0;
 }
