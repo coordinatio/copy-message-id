@@ -40,7 +40,7 @@ jobs:
           echo "version=$new" >> "$GITHUB_OUTPUT"
 
       - name: Build XPI
-        run: zip -r "copy-message-id@j.kahn.xpi" manifest.json background.js popup/ options/ icons/ LICENSE
+        run: make
 
       - name: Commit version bump and tag
         run: |
