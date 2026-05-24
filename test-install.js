@@ -12,6 +12,21 @@ const TB_DEFAULT_PATHS = [
   '/Applications/Thunderbird.app/Contents/MacOS/thunderbird',
 ];
 
+function killThunderbird() {
+  try {
+    if (isWindows) {
+      execSync('taskkill /IM thunderbird.exe /F', { stdio: 'pipe' });
+    } else {
+      execSync('pkill -x thunderbird', { stdio: 'pipe' });
+    }
+    // Give it a moment to release file locks
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1000);
+    return true;
+  } catch {
+    return false; // not running
+  }
+}
+
 function findThunderbird() {
   // Check PATH first
   try {
@@ -52,6 +67,7 @@ ok(`Profile directory: ${profileDir}\n`);
 
 // Step 3: Install addon by dropping XPI into extensions folder
 log('Step 3: Installing addon');
+if (killThunderbird()) info('Closed running Thunderbird instance');
 const extDir = path.join(profileDir, 'extensions');
 fs.mkdirSync(extDir, { recursive: true });
 // Remove any previous unpacked install
