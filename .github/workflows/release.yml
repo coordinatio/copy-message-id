@@ -45,9 +45,6 @@ jobs:
           jq --arg v "$new" '.version = $v' manifest.json > manifest.tmp && mv manifest.tmp manifest.json
           echo "version=$new" >> "$GITHUB_OUTPUT"
 
-      - name: Build XPI
-        run: make
-
       - name: Commit version bump and tag
         run: |
           git config user.name "github-actions[bot]"
@@ -56,6 +53,9 @@ jobs:
           git commit -m "Increase version to ${{ steps.version.outputs.version }}"
           git tag "v${{ steps.version.outputs.version }}"
           git push origin HEAD:${{ github.ref_name }} --tags
+
+      - name: Build XPI
+        run: make
 
       - name: Generate release notes
         id: notes
