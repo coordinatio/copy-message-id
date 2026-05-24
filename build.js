@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const XPI_NAME = 'copy-message-id@j.kahn.xpi';
+const ADDON_BASE = 'copy-message-id@j.kahn';
 const FILES = [
   'manifest.json',
   'background.js',
@@ -17,6 +17,20 @@ const SEVENZIP_DEFAULT_PATHS = [
   'C:\\Program Files\\7-Zip\\7z.exe',
   'C:\\Program Files (x86)\\7-Zip\\7z.exe',
 ];
+
+function getXpiName() {
+  const manifest = JSON.parse(fs.readFileSync('manifest.json', 'utf8'));
+  const version = manifest.version;
+
+  let dirty = false;
+  try {
+    const status = execSync('git status --porcelain', { stdio: 'pipe' }).toString().trim();
+    dirty = status.length > 0;
+  } catch {}
+
+  const suffix = dirty ? '-dev' : '';
+  return `${ADDON_BASE}-${version}${suffix}.xpi`;
+}
 
 // Use 7-Zip (available on most Windows systems) or fall back to zip
 function getZipCommand() {
@@ -38,6 +52,7 @@ function getZipCommand() {
 }
 
 function buildXpi() {
+  const XPI_NAME = getXpiName();
   console.log(`Building ${XPI_NAME}...`);
 
   // Check if all files exist
@@ -47,10 +62,8 @@ function buildXpi() {
     }
   }
 
-  // Remove old XPI if it exists
-  if (fs.existsSync(XPI_NAME)) {
-    fs.unlinkSync(XPI_NAME);
-  }
+  // Remove old XPI files before building
+  fs.readdirSync('.').filter(f => f.startsWith(ADDON_BASE) && f.endsWith('.xpi')).forEach(f => fs.unlinkSync(f));
 
   const zipCmd = getZipCommand();
   const fileArgs = FILES.join(' ');
@@ -65,6 +78,7 @@ function buildXpi() {
   } catch (error) {
     throw new Error(`Failed to build XPI: ${error.message}`);
   }
+  return XPI_NAME;
 }
 
 if (require.main === module) {

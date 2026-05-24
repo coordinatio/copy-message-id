@@ -1,10 +1,6 @@
-XPI_NAME=copy-message-id@j.kahn.xpi
+.PHONY: all clean test-install
 
-.PHONY: clean test-install all
-
-all: $(XPI_NAME)
-
-$(XPI_NAME):
+all:
 	node build.js
 
 clean:
