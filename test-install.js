@@ -138,4 +138,4 @@ if (tbExe) {
   console.log(`  thunderbird.exe -profile "${profileDir}"`);
 }
 console.log();
-console.log('Open a message from the Local Folders inbox and click \'Copy Message ID\' to test.');
+console.log('Open a message from the Local Folders inbox, click the toolbar button and pick "Copy Message ID" or "Copy Subject" from the menu (or use the keyboard shortcuts).');

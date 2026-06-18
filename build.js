@@ -7,7 +7,6 @@ const ADDON_BASE = 'copy-message-id@j.kahn';
 const FILES = [
   'manifest.json',
   'background.js',
-  'popup',
   'options',
   'icons',
   'LICENSE'

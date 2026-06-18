@@ -1,8 +1,21 @@
-# Copy Message ID
+# Copy Message ID and Subject
 
-This is an extension that adds a button to the message header toolbar to
-copy the message ID to the clipboard. This is useful for sending email
-replies via the command line.
+This extension adds a button to the message view toolbar that copies either the
+**Subject** or the **Message-ID** of the displayed message to the clipboard.
+Copying the Message-ID is useful when referencing an email from the command line
+(e.g. `git send-email --in-reply-to`); copying the Subject is handy for bug
+tracker entries, chat references, and notes.
+
+The toolbar button opens a small menu with two entries:
+
+- **Copy Message ID**
+- **Copy Subject**
+
+Two keyboard shortcuts are provided for one-keystroke access (configurable in
+the add-on's options page):
+
+- `Ctrl+Alt+O` — copy Message-ID
+- `Ctrl+Shift+O` — copy Subject
 
 ## Installation
 
@@ -17,6 +30,20 @@ here](https://addons.mozilla.org/en-US/thunderbird/addon/copy-message-id/)
 2. Run `make` to generate the `xpi` file.
 3. In Thunderbird, go to the `Add-ons Manager`.
 4. Click `Install Add-on From File...` and select the `xpi` file from step 2.
+
+## Options
+
+Open the add-on's options page to configure:
+
+- **Prefix / Suffix** — wrapped around the copied value (applies to both
+  Message-ID and Subject).
+- **Include angle brackets** — keep the `<>` around the Message-ID
+  (Message-ID only).
+- **URL encode** — percent-encode the copied value.
+- **Raw Message-ID header** — copy the verbatim `Message-ID:` header line(s)
+  from the raw message source (Message-ID only).
+- **Compact button** — show icon only, no text label.
+- **Keyboard shortcuts** — re-bind or reset both shortcuts.
 
 ## Development
 
@@ -56,8 +83,12 @@ make test-install
 ```
 
 Thunderbird will open with a fresh profile containing all the test messages.
-Open any message and click the **Copy Message ID** button (or use the keyboard
-shortcut) to test the addon.
+Open any message and click the toolbar button to choose **Copy Message ID** or
+**Copy Subject** from the menu (or press `Ctrl+Alt+O` / `Ctrl+Shift+O` to copy
+directly without opening the menu).
+
+A small badge (`✓` green / `✗` red) flashes on the toolbar button for ~1.5s to
+confirm the result of the copy.
 
 Re-running `make test-install` reinstalls the latest build into the same
 profile — no need to restart or toggle the addon.

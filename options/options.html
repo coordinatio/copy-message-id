@@ -6,27 +6,48 @@
     <link rel="stylesheet" href="options.css"/>
   </head>
   <body>
-    <p>Optionally add a prefix and suffix before and after the ID on copy.</p>
+    <p>Add a prefix and/or suffix around the copied value. The options below marked &ldquo;(Message-ID only)&rdquo; are ignored when copying the Subject.</p>
     <form>
-      <label for="prefix">Prefix</label>
-      <textarea id="prefix"></textarea>
+      <fieldset class="group">
+        <legend>Message-ID</legend>
 
-      <label for="suffix">Suffix</label>
-      <textarea id="suffix"></textarea>
+        <label for="prefix">Prefix</label>
+        <textarea id="prefix"></textarea>
+
+        <label for="suffix">Suffix</label>
+        <textarea id="suffix"></textarea>
+      </fieldset>
+
+      <fieldset class="group">
+        <legend>Subject</legend>
+
+        <label for="subject-prefix">Prefix</label>
+        <textarea id="subject-prefix"></textarea>
+
+        <label for="subject-suffix">Suffix</label>
+        <textarea id="subject-suffix"></textarea>
+      </fieldset>
 
       <div class="checkboxes">
-        <label><input id="copyBrackets" type="checkbox"/> Include angle brackets (&lt;&gt;)</label>
-        <label><input id="urlEncode" type="checkbox"/> URL encode the message ID</label>
-        <label><input id="raw" type="checkbox"/> Get raw Message-ID header (e.g. <code>Message-ID: &lt;foo@bar&gt;</code>)</label>
+        <label><input id="copyBrackets" type="checkbox"/> Include angle brackets (&lt;&gt;) <span class="hint">(Message-ID only)</span></label>
+        <label><input id="urlEncode" type="checkbox"/> URL encode the copied value</label>
+        <label><input id="raw" type="checkbox"/> Get raw Message-ID header (e.g. <code>Message-ID: &lt;foo@bar&gt;</code>) <span class="hint">(Message-ID only)</span></label>
         <label><input id="iconOnly" type="checkbox"/> Compact button: show icon only</label>
       </div>
 
-      <label for="shortcut">Keyboard shortcut</label>
+      <label for="shortcut">Copy Message ID shortcut</label>
       <div class="shortcut-controls">
         <input id="shortcut" type="text" readonly/>
         <button id="shortcut-reset" type="button">Reset to default</button>
       </div>
       <p id="shortcut-error" class="shortcut-error"></p>
+
+      <label for="shortcut-subject">Copy Subject shortcut</label>
+      <div class="shortcut-controls">
+        <input id="shortcut-subject" type="text" readonly/>
+        <button id="shortcut-subject-reset" type="button">Reset to default</button>
+      </div>
+      <p id="shortcut-subject-error" class="shortcut-error"></p>
     </form>
     <script src="options.js"></script>
   </body>

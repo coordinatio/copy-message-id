@@ -1,5 +1,7 @@
 const prefixInput = document.querySelector("#prefix");
 const suffixInput = document.querySelector("#suffix");
+const subjectPrefixInput = document.querySelector("#subject-prefix");
+const subjectSuffixInput = document.querySelector("#subject-suffix");
 const copyBracketsInput = document.querySelector("#copyBrackets");
 const urlEncodeInput = document.querySelector("#urlEncode");
 const rawInput = document.querySelector("#raw");
@@ -15,6 +17,8 @@ function autoResize() {
 
 prefixInput.addEventListener("input", autoResize, false);
 suffixInput.addEventListener("input", autoResize, false);
+subjectPrefixInput.addEventListener("input", autoResize, false);
+subjectSuffixInput.addEventListener("input", autoResize, false);
 
 /*
 Store the currently selected settings using browser.storage.local.
@@ -24,6 +28,8 @@ function storeSettings() {
     copyID: {
       prefix: prefixInput.value,
       suffix: suffixInput.value,
+      subjectPrefix: subjectPrefixInput.value,
+      subjectSuffix: subjectSuffixInput.value,
       copyBrackets: copyBrackets.checked,
       urlEncode: urlEncode.checked,
       raw: raw.checked,
@@ -40,6 +46,8 @@ function updateUI(storedSettings) {
   if (storedSettings.copyID) {
     prefixInput.value = storedSettings.copyID.prefix;
     suffixInput.value = storedSettings.copyID.suffix;
+    subjectPrefixInput.value = storedSettings.copyID.subjectPrefix ?? "";
+    subjectSuffixInput.value = storedSettings.copyID.subjectSuffix ?? "";
     copyBracketsInput.checked = storedSettings.copyID.copyBrackets;
     urlEncodeInput.checked = storedSettings.copyID.urlEncode;
     rawInput.checked = storedSettings.copyID.raw;
@@ -70,16 +78,23 @@ On textbox blur, save the currently selected settings.
 */
 prefixInput.addEventListener("blur", storeSettings);
 suffixInput.addEventListener("blur", storeSettings);
+subjectPrefixInput.addEventListener("blur", storeSettings);
+subjectSuffixInput.addEventListener("blur", storeSettings);
 
 const shortcutInput = document.querySelector("#shortcut");
 const shortcutReset = document.querySelector("#shortcut-reset");
 const shortcutError = document.querySelector("#shortcut-error");
 const COMMAND_NAME = "copy-message-id";
 
-async function loadShortcut() {
+const shortcutSubjectInput = document.querySelector("#shortcut-subject");
+const shortcutSubjectReset = document.querySelector("#shortcut-subject-reset");
+const shortcutSubjectError = document.querySelector("#shortcut-subject-error");
+const COMMAND_NAME_SUBJECT = "copy-subject";
+
+async function loadShortcut(input, commandName) {
   const commands = await browser.commands.getAll();
-  const cmd = commands.find(c => c.name === COMMAND_NAME);
-  shortcutInput.value = (cmd && cmd.shortcut) ? cmd.shortcut : "";
+  const cmd = commands.find(c => c.name === commandName);
+  input.value = (cmd && cmd.shortcut) ? cmd.shortcut : "";
 }
 
 function keyEventToShortcut(e) {
@@ -100,37 +115,43 @@ function keyEventToShortcut(e) {
   return [...modifiers, key].join("+");
 }
 
-shortcutInput.addEventListener("focus", () => {
-  shortcutInput.placeholder = "Press shortcut…";
-  shortcutError.textContent = "";
-});
+function wireShortcut(input, resetBtn, errorEl, commandName) {
+  input.addEventListener("focus", () => {
+    input.placeholder = "Press shortcut…";
+    errorEl.textContent = "";
+  });
 
-shortcutInput.addEventListener("blur", () => {
-  shortcutInput.placeholder = "";
-});
+  input.addEventListener("blur", () => {
+    input.placeholder = "";
+  });
 
-shortcutInput.addEventListener("keydown", async (e) => {
-  e.preventDefault();
-  if (e.key === "Escape") { shortcutInput.blur(); return; }
-  const shortcut = keyEventToShortcut(e);
-  if (!shortcut) return;
-  try {
-    await browser.commands.update({ name: COMMAND_NAME, shortcut });
-    shortcutInput.value = shortcut;
-    shortcutError.textContent = "";
-  } catch (err) {
-    shortcutError.textContent = "Invalid shortcut: " + err.message;
-  }
-});
+  input.addEventListener("keydown", async (e) => {
+    e.preventDefault();
+    if (e.key === "Escape") { input.blur(); return; }
+    const shortcut = keyEventToShortcut(e);
+    if (!shortcut) return;
+    try {
+      await browser.commands.update({ name: commandName, shortcut });
+      input.value = shortcut;
+      errorEl.textContent = "";
+    } catch (err) {
+      errorEl.textContent = "Invalid shortcut: " + err.message;
+    }
+  });
 
-shortcutReset.addEventListener("click", async () => {
-  try {
-    await browser.commands.reset(COMMAND_NAME);
-    await loadShortcut();
-    shortcutError.textContent = "";
-  } catch (err) {
-    shortcutError.textContent = "Reset failed: " + err.message;
-  }
-});
+  resetBtn.addEventListener("click", async () => {
+    try {
+      await browser.commands.reset(commandName);
+      await loadShortcut(input, commandName);
+      errorEl.textContent = "";
+    } catch (err) {
+      errorEl.textContent = "Reset failed: " + err.message;
+    }
+  });
+}
 
-loadShortcut();
+wireShortcut(shortcutInput, shortcutReset, shortcutError, COMMAND_NAME);
+wireShortcut(shortcutSubjectInput, shortcutSubjectReset, shortcutSubjectError, COMMAND_NAME_SUBJECT);
+
+loadShortcut(shortcutInput, COMMAND_NAME);
+loadShortcut(shortcutSubjectInput, COMMAND_NAME_SUBJECT);

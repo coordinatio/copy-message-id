@@ -227,16 +227,25 @@ How to test
 2. **Exercise**
 
     For each email in the test folder
-    1. Click the add-on button.
+    1. Click the add-on toolbar button and pick **Copy Message ID**
+       (or press the *Copy Message ID* shortcut, e.g. `Ctrl+Alt+O`).
     2. Paste the result in your favourite text editor to see the contents.
+    3. Repeat with **Copy Subject** (or the *Copy Subject* shortcut, e.g.
+       `Ctrl+Shift+O`) to verify the Subject branch. A small green `✓` badge
+       flashes on the toolbar button on success; a red `✗` badge appears on
+       failure.
 
 3. **Verify**
 
     For each pasted result:
     1. See that the pasted text is what you expect.
-    2. To know that, note that the Message-ID itself contains a verbose name
-       that represents the case name, so you can easily see that what you
-       pasted is exactly the test case your are exercising.
+    2. For the **Message-ID** branch, note that the Message-ID itself contains
+       a verbose name that represents the case name, so you can easily see that
+       what you pasted is exactly the test case you are exercising.
+    3. For the **Subject** branch, the pasted text should match the `Subject:`
+       header of the email, which by convention equals the test name (see the
+       "Final test cases" section below). Prefix/suffix/url-encode options, if
+       enabled, must be reflected.
 
 4. **Teardown**
 
